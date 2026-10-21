@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maintain tour – base price</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap">
+<style>
+:root{
+  --ink:#333246;--ink-muted:#5a5970;--surface:#e1e2ea;--raised:#ffffff;--line:#cfd0db;--line-strong:#7c7b93;
+  --action:#afb2e6;--action-hover:#9a9ee0;--focus:#333246;--err-bg:#fbe4e2;--err-ink:#8c1d18;--row-alt:#f3f4f7;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--display:"Plus Jakarta Sans","Inter",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+.page{max-width:1640px;margin:0 auto;padding:32px 16px}
+.demo{display:flex;align-items:center;gap:10px;margin:0 0 16px 8px;font-size:14px;color:var(--ink-muted)}
+.demo input{width:18px;height:18px;accent-color:var(--ink)}
+.dialog{background:var(--raised);border-radius:16px;overflow:hidden}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px 24px;padding:24px 24px 16px}
+h1{margin:0;font-family:var(--display);font-size:28px;line-height:34px;font-weight:700;letter-spacing:-.01em}
+.subtitle{font-size:16px;line-height:26px;color:var(--ink-muted);margin-top:4px}
+.field{display:flex;flex-direction:column;gap:6px;width:200px}
+.label{font-size:13px;line-height:18px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.scroll{overflow-x:auto;padding:0 14px}
+table{width:100%;min-width:1560px;border-collapse:collapse;font-size:14px;line-height:22px}
+th{text-align:left;font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted);padding:12px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody td:nth-child(2) .fi{min-width:210px}
+tbody td:nth-child(3) .fi{min-width:250px}
+.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tfoot td{background:var(--row-alt);font-weight:700}
+.fi{width:100%;height:40px;padding:0 14px;border:1px solid var(--line-strong);border-radius:12px;background:#fff;color:var(--ink);font:400 14px/22px var(--sans)}
+.fi.n{text-align:right}
+.fi:disabled{background:#eceef3;color:var(--ink-muted);cursor:not-allowed}
+.pct{display:flex;align-items:center;gap:6px}
+.ro{height:40px;padding:0 14px;display:flex;align-items:center;justify-content:flex-end;border:1px dashed var(--line);border-radius:12px;background:#f6f7f9;color:var(--ink-muted);font-variant-numeric:tabular-nums}
+.pct .ro{flex:1}
+.hint{font-size:12px;line-height:16px;color:var(--ink-muted);text-align:right;margin-top:4px}
+.sg{display:inline-flex;padding:3px;gap:2px;border:1px solid var(--line-strong);border-radius:999px;background:#fff}
+.sg button{height:34px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--ink);font:500 14px/20px var(--sans);cursor:pointer}
+.sg button[aria-pressed="true"]{background:var(--action);font-weight:600}
+.sg button:disabled{cursor:not-allowed}
+.btn{height:44px;padding:0 24px;border-radius:999px;border:1px solid transparent;font:600 15px/20px var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--action);color:var(--ink)}
+.btn-primary:hover:not(:disabled){background:var(--action-hover)}
+.btn-secondary{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+.btn-ghost{background:transparent;color:var(--ink);height:36px;padding:0 12px;font-size:14px}
+.btn-ghost:hover{text-decoration:underline;text-underline-offset:3px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.icon-btn{width:36px;height:36px;border:0;border-radius:999px;background:transparent;color:var(--ink-muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.icon-btn:hover:not(:disabled){background:var(--row-alt);color:var(--ink)}
+.icon-btn:disabled{opacity:.4;cursor:not-allowed}
+:is(.fi,.sg button,.btn,.icon-btn,.demo input):focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;padding:16px 24px;border-top:1px solid var(--line)}
+.msgs{display:flex;flex-direction:column;gap:6px}
+.alert{padding:10px 16px;border-radius:12px;background:var(--err-bg);color:var(--err-ink);font-size:14px;line-height:22px}
+.actions{display:flex;gap:12px;margin-left:auto}
+</style>
+</head>
+<body>
+<main class="page">
+  <label class="demo"><input type="checkbox" id="locked"> Demo: participants are booked on this tour</label>
+
+  <section class="dialog" aria-labelledby="title">
+    <div class="head">
+      <div>
+        <h1 id="title">Maintain tour – base price</h1>
+        <div class="subtitle">The fantastic Møre coast</div>
+      </div>
+      <div class="field">
+        <label class="label" for="price">Tour price incl. VAT</label>
+        <input id="price" class="fi n" value="13 990,00" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:48px">No.</th>
+            <th style="width:220px">Description</th>
+            <th style="width:250px">VAT class</th>
+            <th>Amount type</th>
+            <th class="n" style="width:150px">Amount</th>
+            <th class="n" style="width:120px">Percentage</th>
+            <th class="n">Price incl. VAT</th>
+            <th class="n">VAT amount</th>
+            <th class="n">Price excl. VAT</th>
+            <th class="n">VAT %</th>
+            <th style="width:44px"><span class="visually-hidden" style="position:absolute;left:-9999px">Remove</span></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+        <tfoot>
+          <tr>
+            <td></td>
+            <td colspan="2"><button type="button" class="btn btn-ghost" id="add">+ Add item</button></td>
+            <td colspan="2" class="n">Total base price</td>
+            <td class="n" id="tPct"></td>
+            <td class="n" id="tIncl"></td>
+            <td class="n" id="tVat"></td>
+            <td class="n" id="tExcl"></td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="foot">
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" id="cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="ok">OK</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  // VAT classes – replace with the real classes from Vaylo.
+  var CLASSES = [
+    { name: 'Reise innland lav mva', rate: 12 },
+    { name: 'Persontransport innland', rate: 12 },
+    { name: 'Overnatting innland', rate: 12 },
+    { name: 'Næringsmidler', rate: 15 },
+    { name: 'Salg servering innland m/mva', rate: 25 },
+    { name: 'Ordinær sats', rate: 25 },
+    { name: 'Salg reise utland', rate: 0 }
+  ];
+  var TYPES = ['Fixed', 'Percentage', 'Remaining'];
+
+  var state = {
+    locked: false,
+    price: '13 990,00',
+    rows: [
+      { desc: 'Cabin, 2 beds, window', cls: 'Reise innland lav mva', type: 'Fixed', value: '11 790,00' },
+      { desc: 'Guided harbour excursion', cls: 'Salg reise utland', type: 'Percentage', value: '0' },
+      { desc: '3-course dinner', cls: 'Salg servering innland m/mva', type: 'Remaining', value: '' }
+    ]
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var rateOf = function (n) { var c = CLASSES.find(function (c) { return c.name === n; }); return c ? c.rate : 0; };
+  var parse = function (s) { var n = parseFloat(String(s).replace(/[\s ]/g, '').replace(',', '.')); return isNaN(n) ? 0 : n; };
+  var r2 = function (n) { return Math.round(n * 100) / 100; };
+  var fmt = function (n) {
+    var s = Math.abs(n).toFixed(2).split('.');
+    return (n < 0 ? '−' : '') + s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ',' + s[1];
+  };
+  var fmtPct = function (n) { return (Math.round(n * 100) / 100).toFixed(2).replace('.', ','); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+
+  function compute() {
+    var total = parse(state.price);
+    var amts = state.rows.map(function (r) {
+      if (r.type === 'Fixed') return r2(parse(r.value));
+      if (r.type === 'Percentage') return r2(total * parse(r.value) / 100);
+      return null;
+    });
+    var others = amts.reduce(function (a, b) { return a + (b || 0); }, 0);
+    var remIdx = [];
+    state.rows.forEach(function (r, i) { if (r.type === 'Remaining') remIdx.push(i); });
+    amts = amts.map(function (a, i) { return a === null ? (i === remIdx[0] ? r2(total - others) : 0) : a; });
+
+    var errors = [];
+    if (remIdx.length > 1) errors.push('Only one item can be Remaining.');
+    if (remIdx.length && amts[remIdx[0]] < 0) errors.push('Remaining amount is negative: the other items exceed the tour price by ' + fmt(-amts[remIdx[0]]) + '.');
+    var pctSum = state.rows.reduce(function (a, r) { return a + (r.type === 'Percentage' ? parse(r.value) : 0); }, 0);
+    if (pctSum > 100) errors.push('Percentages add up to more than 100 %.');
+    var lineSum = r2(amts.reduce(function (a, b) { return a + b; }, 0));
+    if (!remIdx.length && Math.abs(lineSum - total) > 0.005) errors.push('Items add up to ' + fmt(lineSum) + ', but the tour price is ' + fmt(total) + '. Add a Remaining item or adjust the values.');
+
+    var lines = state.rows.map(function (r, i) {
+      var rate = rateOf(r.cls), incl = amts[i], vat = r2(incl * rate / (100 + rate));
+      return { rate: rate, incl: incl, vat: vat, excl: r2(incl - vat) };
+    });
+    return { total: total, lines: lines, errors: errors };
+  }
+
+  // Full re-render of the rows (structure changes: add/remove, type switch, lock)
+  function renderRows() {
+    var dis = state.locked ? ' disabled' : '';
+    $('rows').innerHTML = state.rows.map(function (r, i) {
+      var opts = CLASSES.map(function (c) {
+        return '<option value="' + esc(c.name) + '"' + (c.name === r.cls ? ' selected' : '') + '>' + esc(c.name) + ' (' + c.rate + ' %)</option>';
+      }).join('');
+      var segs = TYPES.map(function (t) {
+        return '<button type="button" data-i="' + i + '" data-type="' + t + '" aria-pressed="' + (r.type === t) + '"' + dis + '>' + t + '</button>';
+      }).join('');
+      // Amount and percentage: the one matching the amount type is editable, the other is calculated
+      var amtCell = r.type === 'Fixed'
+        ? '<input class="fi n" data-i="' + i + '" data-k="value" aria-label="Amount, line ' + (i + 1) + '" value="' + esc(r.value) + '" inputmode="decimal"' + dis + '>'
+        : '<div class="ro" data-out="amt" aria-label="Calculated amount, line ' + (i + 1) + '"></div>' + (r.type === 'Remaining' ? '<div class="hint">Total – other items</div>' : '');
+      var pctCell = r.type === 'Percentage'
+        ? '<div class="pct"><input class="fi n" data-i="' + i + '" data-k="value" aria-label="Percentage of tour price, line ' + (i + 1) + '" value="' + esc(r.value) + '" inputmode="decimal"' + dis + '><span>%</span></div>'
+        : '<div class="pct"><div class="ro" data-out="pct" aria-label="Calculated percentage, line ' + (i + 1) + '"></div><span>%</span></div>';
+      var val = amtCell + '</td><td class="n">' + pctCell;
+      return '<tr>' +
+        '<td>' + (i + 1) + '</td>' +
+        '<td><input class="fi" data-i="' + i + '" data-k="desc" aria-label="Description, line ' + (i + 1) + '" value="' + esc(r.desc) + '"' + dis + '></td>' +
+        '<td><select class="fi" data-i="' + i + '" data-k="cls" aria-label="VAT class, line ' + (i + 1) + '"' + dis + '>' + opts + '</select></td>' +
+        '<td><div class="sg" role="group" aria-label="Amount type, line ' + (i + 1) + '">' + segs + '</div></td>' +
+        '<td class="n">' + val + '</td>' +
+        '<td class="n" data-out="incl"></td><td class="n" data-out="vat"></td><td class="n" data-out="excl"></td><td class="n" data-out="rate"></td>' +
+        '<td><button type="button" class="icon-btn" data-remove="' + i + '" aria-label="Remove line ' + (i + 1) + '"' + (state.locked || state.rows.length < 2 ? ' disabled' : '') + '>' +
+          '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></td>' +
+        '</tr>';
+    }).join('');
+    renderNumbers();
+  }
+
+  // Updates only computed figures (keeps focus while typing)
+  function renderNumbers() {
+    var res = compute(), t = { incl: 0, vat: 0, excl: 0 };
+    var trs = $('rows').children;
+    res.lines.forEach(function (l, i) {
+      var tr = trs[i];
+      tr.querySelector('[data-out="incl"]').textContent = fmt(l.incl);
+      tr.querySelector('[data-out="vat"]').textContent = fmt(l.vat);
+      tr.querySelector('[data-out="excl"]').textContent = fmt(l.excl);
+      tr.querySelector('[data-out="rate"]').textContent = l.rate + ' %';
+      var a = tr.querySelector('[data-out="amt"]'), p = tr.querySelector('[data-out="pct"]');
+      if (a) a.textContent = fmt(l.incl);
+      if (p) p.textContent = fmtPct(res.total ? l.incl / res.total * 100 : 0);
+      t.incl += l.incl; t.vat += l.vat; t.excl += l.excl;
+    });
+    $('tIncl').textContent = fmt(t.incl);
+    $('tVat').textContent = fmt(t.vat);
+    $('tExcl').textContent = fmt(t.excl);
+    $('tPct').textContent = fmtPct(res.total ? t.incl / res.total * 100 : 0) + ' %';
+
+    var msgs = [];
+    if (state.locked) msgs.push('Participants are booked on this tour. Base price cannot be changed.');
+    $('msgs').innerHTML = msgs.concat(res.errors).map(function (m) { return '<div class="alert" role="alert">' + esc(m) + '</div>'; }).join('');
+    $('ok').disabled = state.locked || res.errors.length > 0;
+    $('price').disabled = state.locked;
+    $('add').disabled = state.locked;
+  }
+
+  // Events
+  $('rows').addEventListener('input', function (e) {
+    var el = e.target, i = el.dataset.i, k = el.dataset.k;
+    if (i === undefined || !k) return;
+    state.rows[i][k] = el.value;
+    renderNumbers();
+  });
+  $('rows').addEventListener('change', function (e) {
+    var el = e.target;
+    if (el.tagName === 'SELECT') { state.rows[el.dataset.i].cls = el.value; renderNumbers(); }
+  });
+  $('rows').addEventListener('click', function (e) {
+    var seg = e.target.closest('button[data-type]');
+    if (seg) {
+      var i = +seg.dataset.i, t = seg.dataset.type, r = state.rows[i];
+      if (r.type === t) return;
+      var res = compute(), incl = res.lines[i].incl;
+      r.value = t === 'Fixed' ? fmt(incl) : t === 'Percentage' ? String(res.total ? r2(incl / res.total * 100) : 0).replace('.', ',') : '';
+      r.type = t;
+      renderRows();
+      var again = $('rows').querySelector('button[data-i="' + i + '"][data-type="' + t + '"]');
+      if (again) again.focus();
+      return;
+    }
+    var rm = e.target.closest('button[data-remove]');
+    if (rm) { state.rows.splice(+rm.dataset.remove, 1); renderRows(); }
+  });
+  $('price').addEventListener('input', function (e) { state.price = e.target.value; renderNumbers(); });
+  $('add').addEventListener('click', function () {
+    state.rows.push({ desc: '', cls: 'Ordinær sats', type: 'Fixed', value: '0' });
+    renderRows();
+    var inputs = $('rows').querySelectorAll('input[data-k="desc"]');
+    inputs[inputs.length - 1].focus();
+  });
+  $('locked').addEventListener('change', function (e) { state.locked = e.target.checked; renderRows(); });
+
+  renderRows();
+})();
+</script>
+</body>
+</html>
